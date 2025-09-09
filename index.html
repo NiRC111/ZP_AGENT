@@ -2,210 +2,343 @@
 <html lang="mr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Government Quasi-Judicial AI System — ZP Chandrapur</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Government Quasi-Judicial AI System — Zilla Parishad Chandrapur</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+<!-- PDF.js & Mammoth (client text extraction) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<!-- Tesseract.js OCR (eng+hin+mar) -->
+<script src="https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Roboto','Noto Sans Devanagari',sans-serif;background:#f5f6fa;color:#1f2d3d}
-  .header{background:#fff;border-bottom:3px solid #ff9933}
-  .header__in{max-width:1100px;margin:0 auto;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 16px}
-  .brand{display:flex;gap:14px;align-items:center}
-  .emblem{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle,#ffd54f 0,#ffa000 70%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#6d4c41}
-  .title{line-height:1.15}
-  .title b{color:#ff6b00}
-  .badge{background:#138808;color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700}
-  .wrap{max-width:1100px;margin:18px auto;padding:0 16px}
-  .card{background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:16px;margin-bottom:14px}
-  .card h2{font-size:18px;border-bottom:2px solid #ff9933;padding-bottom:10px;margin-bottom:12px}
-  label{font-weight:700;margin:8px 0 6px;display:block}
-  input[type=text],textarea,select{width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;color:#1f2d3d}
-  input[type=file]{display:none}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .btns{display:flex;gap:10px;flex-wrap:wrap}
-  .btn{border:0;border-radius:10px;color:#fff;padding:12px 16px;font-weight:800;cursor:pointer}
-  .b1{background:linear-gradient(135deg,#667eea,#764ba2)}
-  .b2{background:linear-gradient(135deg,#f093fb,#f5576c)}
-  .b3{background:linear-gradient(135deg,#4facfe,#00f2fe)}
-  .b4{background:linear-gradient(135deg,#43e97b,#38f9d7)}
-  .upload{border:2px dashed #90caf9;border-radius:10px;padding:14px;text-align:center;background:#f8fbff;cursor:pointer}
-  .pill{background:#eef2ff;border:1px solid #c7d2fe;color:#1e3a8a;border-radius:8px;padding:6px 10px;display:inline-flex;gap:8px;align-items:center}
-  .status{display:none;margin:10px 0;padding:10px;border-radius:8px;font-weight:700}
-  .ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
-  .warn{background:#fff3cd;color:#856404;border:1px solid #ffeeba}
-  .err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
-  .output{display:none}
-  .output.active{display:block}
-  .output h3{font-size:18px;margin-bottom:8px}
-  .mono{white-space:pre-wrap;line-height:1.8;border:1px solid #e5e7eb;border-radius:10px;padding:14px;background:#fcfcfe}
-  .lang{display:flex;gap:8px}
-  .lang button{border:2px solid #ff9933;background:#fff;color:#ff6b00;border-radius:999px;padding:6px 10px;font-weight:800;cursor:pointer}
-  .lang .on{background:#ff9933;color:#fff}
-  @media(max-width:860px){.row{grid-template-columns:1fr}}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--saffron:#FF9933;--green:#138808;--ink:#222;--muted:#666;--panel:#fff;--soft:#f8f9fa}
+body{font-family:'Roboto','Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#FF9933 0%,#FFFFFF 50%,#138808 100%);min-height:100vh;color:var(--ink)}
+.gov-header{background:#fff;border-bottom:3px solid var(--saffron);padding:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.gov-header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.gov-logo-section{display:flex;align-items:center;gap:22px}
+.emblem{width:84px;height:84px;background:url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iOTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNDUiIGN5PSI0NSIgcj0iNDIiIGZpbGw9IiNGRkI5RDAiIHN0cm9rZT0iI0ZGOEMwMCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNDUiIHk9IjUxIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOEI0NTEzIj7gpq7gp4fgp4Tgpr7gprAg4KSf4KSH4KSV4KS-4KWN4KSfPC90ZXh0Pjwvc3ZnPg==') center/contain no-repeat}
+.maha-seal{width:84px;height:84px;background:radial-gradient(circle,#FFD700 0%,#FFA500 70%);border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #FF8C00}
+.gov-titles{display:flex;flex-direction:column}
+.gov-title-marathi{font-family:'Noto Sans Devanagari',sans-serif;font-size:22px;font-weight:800;color:var(--saffron)}
+.gov-title-english{font-size:18px;font-weight:800;color:#333;letter-spacing:.4px}
+.gov-subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+.security-info{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.security-badge{background:var(--green);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px}
+.session-info{font-size:12px;color:var(--muted)}
+.language-toggle{position:fixed;top:112px;right:20px;background:#fff;border-radius:25px;box-shadow:0 4px 15px rgba(0,0,0,.2);display:flex;overflow:hidden;z-index:1000}
+.lang-btn{padding:10px 20px;border:none;background:#fff;font-weight:800;cursor:pointer}
+.lang-btn.active{background:var(--saffron);color:#fff}
+.main-container{max-width:1400px;margin:18px auto;padding:0 20px}
+.alert-banner{background:#FFF3CD;border:2px solid #FFC107;border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.alert-text{font-weight:700;color:#856404}
+.tabs-nav{background:#fff;border-radius:10px;padding:10px;margin-bottom:18px;display:flex;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.08);flex-wrap:wrap}
+.tab-btn{padding:12px 20px;border:none;background:#f0f0f0;border-radius:8px;font-weight:800;cursor:pointer}
+.tab-btn.active{background:linear-gradient(135deg,#FF9933,#FF6B00);color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.panel{background:var(--panel);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:3px solid var(--saffron);margin-bottom:16px}
+.panel-title{font-size:19px;font-weight:900;color:#333;display:flex;gap:10px}
+.required-mark{color:#e74c3c;font-size:18px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-weight:800;color:#444;margin-bottom:8px;display:flex;gap:6px}
+.form-control{padding:11px;border:2px solid #ddd;border-radius:8px;font-size:15px}
+.form-control:focus{outline:none;border-color:var(--saffron)}
+.upload-zone{border:3px dashed #3498db;border-radius:14px;padding:22px;text-align:center;background:#f8f9fa;cursor:pointer;transition:.2s;margin-bottom:10px}
+.upload-zone:hover{background:#e3f2fd;border-color:#2196f3}
+.upload-zone.has-file{background:#e8f5e9;border-color:#4caf50;border-style:solid}
+.file-list{margin-top:10px;text-align:left}
+.file-item{background:#fff;padding:10px;border-radius:8px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #eee}
+.case-type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.case-type-card{background:#f8f9fa;border:2px solid transparent;border-radius:10px;padding:12px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.case-type-card:hover{background:#e3f2fd;border-color:#2196f3}
+.case-type-card.selected{background:#fff3e0;border-color:var(--saffron)}
+.action-panel{background:#fff;border-radius:14px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.08);display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:13px 22px;border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;color:#fff}
+.btn-analyze{background:linear-gradient(135deg,#667eea,#764ba2)}
+.btn-decision{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.btn-order{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+.btn-print{background:linear-gradient(135deg,#43e97b,#38f9d7)}
+.status-message{padding:12px;border-radius:10px;margin:12px 0;display:none}
+.status-message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;display:block}
+.status-message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;display:block}
+.status-message.warning{background:#fff3cd;color:#856404;border:1px solid #ffeeba;display:block}
+.output-panel{background:#fff;border-radius:14px;padding:22px;margin-top:16px;box-shadow:0 4px 18px rgba(0,0,0,.08);display:none}
+.output-panel.active{display:block}
+.output-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:3px solid var(--saffron);margin-bottom:14px}
+.output-title{font-size:20px;font-weight:900;color:#333}
+.output-content{font-size:16px;line-height:1.85;white-space:pre-wrap;color:#111}
+.signature-block{margin-top:28px;padding-top:14px;border-top:2px solid #ddd}
+.signature-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:32px}
+.signature-item{text-align:center}
+.signature-line{border-bottom:2px solid #333;margin-bottom:10px;height:40px}
+.loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:9999}
+.loading-overlay.active{display:flex}
+.loading-box{background:#fff;padding:30px;border-radius:14px;text-align:center}
+.spinner{border:4px solid #f3f3f3;border-top:4px solid var(--saffron);border-radius:50%;width:54px;height:54px;animation:spin 1s linear infinite;margin:0 auto 14px}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@media (max-width:768px){.gov-header-content{flex-direction:column;text-align:center}.security-info{align-items:center;margin-top:8px}.signature-grid{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
-<header class="header">
-  <div class="header__in">
-    <div class="brand">
-      <div class="emblem">शासन</div>
-      <div class="title">
-        <div><b>जिल्हा परिषद चंद्रपूर</b></div>
-        <div>Zilla Parishad Chandrapur — CEO Office</div>
+<header class="gov-header">
+  <div class="gov-header-content">
+    <div class="gov-logo-section">
+      <div class="emblem" title="सत्यमेव जयते"></div>
+      <div class="gov-titles">
+        <div class="gov-title-marathi">जिल्हा परिषद चंद्रपूर</div>
+        <div class="gov-title-english">ZILLA PARISHAD CHANDRAPUR</div>
+        <div class="gov-subtitle">Office of the Chief Executive Officer | मुख्य कार्यकारी अधिकारी कार्यालय</div>
       </div>
+      <div class="maha-seal" title="महाराष्ट्र शासन"><span style="font-size:12px;font-weight:800;color:#8B4513;line-height:1.1;text-align:center">महाराष्ट्र<br/>शासन</span></div>
     </div>
-    <div class="lang">
-      <button id="lang-mr" class="on" onclick="setLang('marathi')">मराठी</button>
-      <button id="lang-en" onclick="setLang('english')">English</button>
-      <span class="badge">🔒 Secure Government Portal</span>
+    <div class="security-info">
+      <div class="security-badge">🔒 Secure Government Portal</div>
+      <div class="session-info" id="sessionInfo"></div>
     </div>
   </div>
 </header>
 
-<div class="wrap">
-  <!-- Documents -->
-  <div class="card">
-    <h2>📁 कागदपत्र अपलोड (Case + GR अनिवार्य)</h2>
-    <div class="row">
-      <div>
-        <label>Case File (PDF/DOCX/Image) *</label>
-        <div class="upload" onclick="document.getElementById('caseFile').click()">Click to upload Case</div>
-        <input id="caseFile" type="file" accept=".pdf,.docx,image/*" />
-        <div id="caseName" class="pill" style="margin-top:8px;display:none">✅ <span></span></div>
-        <label style="margin-top:10px">Alternative: Paste Case Text (optional)</label>
-        <textarea id="caseText" rows="6" placeholder="प्रकरणाचा मजकूर इथे पेस्ट करा (पर्यायी)"></textarea>
+<div class="language-toggle">
+  <button class="lang-btn active" onclick="setLanguage('mr',event)">मराठी</button>
+  <button class="lang-btn" onclick="setLanguage('en',event)">English</button>
+</div>
+
+<div class="main-container">
+  <div class="alert-banner">
+    <span class="alert-text">
+      <span class="t-en" style="display:none">This system handles sensitive government decisions. All actions are logged and audited.</span>
+      <span class="t-mr">ही प्रणाली संवेदनशील सरकारी निर्णय हाताळते. सर्व क्रिया नोंदविल्या व ऑडिट केल्या जातात.</span>
+    </span>
+  </div>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('upload',event)">📁 <span class="t-en" style="display:none">Documents</span><span class="t-mr">कागदपत्रे</span></button>
+    <button class="tab-btn" onclick="showTab('case',event)">⚖️ <span class="t-en" style="display:none">Case Details</span><span class="t-mr">प्रकरण तपशील</span></button>
+    <button class="tab-btn" onclick="showTab('analysis',event)">📊 <span class="t-en" style="display:none">AI Analysis</span><span class="t-mr">AI विश्लेषण</span></button>
+  </div>
+
+  <!-- Upload -->
+  <div id="upload-tab" class="tab-content active">
+    <div class="panel">
+      <div class="panel-header"><h2 class="panel-title">📁 <span class="t-en" style="display:none">Document Upload Section</span><span class="t-mr">कागदपत्र अपलोड विभाग</span></h2></div>
+
+      <div class="form-group">
+        <label class="form-label"> <span class="t-en" style="display:none">Case File</span><span class="t-mr">प्रकरण फाईल</span> <span class="required-mark">*</span></label>
+        <div class="upload-zone" id="caseUploadZone" onclick="document.getElementById('caseFile').click()">
+          <b>PDF, DOCX, Image</b>
+          <input type="file" id="caseFile" accept=".pdf,.docx,image/*" style="display:none" onchange="handleFileUpload('case',this)">
+          <div id="caseFileList" class="file-list"></div>
+        </div>
       </div>
-      <div>
-        <label>Government Resolution (GR) (PDF/DOCX/Image) *</label>
-        <div class="upload" onclick="document.getElementById('grFile').click()">Click to upload GR</div>
-        <input id="grFile" type="file" accept=".pdf,.docx,image/*" />
-        <div id="grName" class="pill" style="margin-top:8px;display:none">✅ <span></span></div>
-        <label style="margin-top:10px">Alternative: Paste GR Text (optional)</label>
-        <textarea id="grText" rows="6" placeholder="GR चा मजकूर इथे पेस्ट करा (पर्यायी)"></textarea>
+
+      <div class="form-group">
+        <label class="form-label"> <span class="t-en" style="display:none">Government Resolution (GR)</span><span class="t-mr">शासन निर्णय (GR)</span> <span class="required-mark">*</span></label>
+        <div class="upload-zone" id="grUploadZone" onclick="document.getElementById('grFile').click()">
+          <b>PDF, DOCX, Image</b>
+          <input type="file" id="grFile" accept=".pdf,.docx,image/*" style="display:none" onchange="handleFileUpload('gr',this)">
+          <div id="grFileList" class="file-list"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><span class="t-en" style="display:none">Additional Legal Docs (Optional)</span><span class="t-mr">अतिरिक्त कायदेशीर कागदपत्रे (पर्यायी)</span></label>
+        <div class="upload-zone" id="legalUploadZone" onclick="document.getElementById('legalFiles').click()">
+          <b>Judgments/Sections/Procedures</b>
+          <input type="file" id="legalFiles" accept=".pdf,.docx,image/*" multiple style="display:none" onchange="handleFileUpload('legal',this)">
+          <div id="legalFileList" class="file-list"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Case Info -->
-  <div class="card">
-    <h2>⚖️ प्रकरण तपशील</h2>
-    <div class="row">
-      <div>
-        <label>प्रकरण क्रमांक (Case No.)</label>
-        <input id="caseNo" type="text" placeholder="उदा. ZP/CEO/2025/123" />
+  <!-- Case -->
+  <div id="case-tab" class="tab-content">
+    <div class="panel">
+      <div class="panel-header"><h2 class="panel-title">⚖️ <span class="t-en" style="display:none">Case Configuration</span><span class="t-mr">प्रकरण कॉन्फिगरेशन</span></h2></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label"><span class="t-en" style="display:none">Case Number</span><span class="t-mr">फाईल क्रमांक</span></label>
+          <input id="caseNumber" class="form-control" placeholder="जिप/मुकाअ/२०२५/XXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="t-en" style="display:none">Applicant Name</span><span class="t-mr">अर्जदार नाव</span></label>
+          <input id="applicantName" class="form-control" placeholder="उदा. सौ. इंदुबाई राठोड">
+        </div>
       </div>
-      <div>
-        <label>अर्जदाराचे नाव (Applicant Name)</label>
-        <input id="applicant" type="text" placeholder="उदा. सौ. इंदुबाई हादर राठोड" />
+
+      <div class="form-group">
+        <label class="form-label"><span class="t-en" style="display:none">Specific Legal Sections/Rules</span><span class="t-mr">विशिष्ट कायदेशीर कलमे/नियम</span></label>
+        <textarea id="legalSections" class="form-control" rows="3" placeholder="उदा. GR दि. 02/02/2023; MCS Rules; RTI S.19"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><span class="t-en" style="display:none">Brief Case Description</span><span class="t-mr">प्रकरणाचे थोडक्यात वर्णन</span></label>
+        <textarea id="caseDescription" class="form-control" rows="5" placeholder="मुख्य मुद्दे थोडक्यात..."></textarea>
       </div>
     </div>
-    <label>विशिष्ट कायदेशीर कलमे/नियम (Optional)</label>
-    <input id="sections" type="text" placeholder="उदा. GR दि. 02/02/2023; MCS Rules; RTI S.19" />
-    <label style="margin-top:10px">प्रकरणाचे संक्षिप्त वर्णन (Optional)</label>
-    <textarea id="summary" rows="4" placeholder="उदा. स्थानिक रहिवासी अट व भरती तक्रारी बाबत..."></textarea>
   </div>
 
-  <!-- Actions -->
-  <div class="card">
-    <h2>🛠️ कृती</h2>
-    <div class="btns">
-      <button class="btn b1" onclick="doAction('analyze')">🔍 AI ANALYZE</button>
-      <button class="btn b2" onclick="doAction('decision')">📝 GENERATE DECISION</button>
-      <button class="btn b3" onclick="doAction('order')">📋 GENERATE ORDER (मराठी)</button>
-      <button class="btn b4" onclick="printOutput()">🖨️ PRINT / PDF</button>
+  <!-- Analysis -->
+  <div id="analysis-tab" class="tab-content">
+    <div class="panel">
+      <div class="panel-header"><h2 class="panel-title">📊 <span class="t-en" style="display:none">AI Analysis</span><span class="t-mr">AI विश्लेषण</span></h2></div>
+      <div id="analysisBox" class="output-content" style="background:#f8f9fa;border:1px solid #eee;border-radius:10px;padding:16px;min-height:140px"><em>कागदपत्रे अपलोड करा व “Analyze with AI” क्लिक करा.</em></div>
     </div>
-    <div id="status" class="status"></div>
   </div>
 
-  <!-- Output -->
-  <div id="outCard" class="card output">
-    <h2 id="outTitle">Output</h2>
-    <div id="outText" class="mono"></div>
-    <div class="btns" style="margin-top:10px">
-      <button class="btn b1" onclick="copyOut()">📋 Copy</button>
-      <button class="btn b3" onclick="downloadOut()">💾 Download</button>
+  <div class="action-panel">
+    <button class="btn btn-analyze" onclick="analyzeCase()">🔍 <span class="t-en" style="display:none">ANALYZE WITH AI</span><span class="t-mr">AI सह विश्लेषण</span></button>
+    <button class="btn btn-decision" onclick="generateDecision()">📝 <span class="t-en" style="display:none">GENERATE DECISION</span><span class="t-mr">निर्णय तयार करा</span></button>
+    <button class="btn btn-order" onclick="generateOrder()">📋 <span class="t-en" style="display:none">GENERATE ORDER</span><span class="t-mr">आदेश तयार करा</span></button>
+    <button class="btn btn-print" onclick="printOutput()">🖨️ PDF</button>
+  </div>
+
+  <div id="statusMessage" class="status-message"></div>
+
+  <div id="outputPanel" class="output-panel">
+    <div class="output-header">
+      <h2 class="output-title" id="outputTitle">Output</h2>
+      <div>
+        <button class="btn btn-analyze" style="padding:8px 14px" onclick="copyOutput()">📋 Copy</button>
+        <button class="btn btn-order" style="padding:8px 14px" onclick="downloadOutput()">💾 Download</button>
+      </div>
     </div>
+    <div id="outputContent" class="output-content"></div>
+    <div id="signatureBlock" class="signature-block"></div>
+  </div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <h3 style="color:#333;margin-bottom:8px">Processing…</h3>
+    <p style="color:#666">Reading documents and extracting facts</p>
   </div>
 </div>
 
 <script>
-  // Simple language toggle (default Marathi)
-  let LANG = 'marathi';
-  function setLang(l){ LANG=l; document.getElementById('lang-mr').classList.toggle('on', l==='marathi'); document.getElementById('lang-en').classList.toggle('on', l!=='marathi'); }
+document.getElementById('sessionInfo').textContent="Session: "+new Date().toLocaleString();
 
-  // Status helper
-  function show(msg, cls='ok'){ const s=document.getElementById('status'); s.className='status '+(cls==='ok'?'ok':cls==='warn'?'warn':'err'); s.textContent=msg; s.style.display='block'; }
+let lang='mr';
+let uploaded={case:null,gr:null,legal:[]};
+let textStore={caseText:'',grText:'',legalText:''};
+let facts={};
 
-  // File reads (text only). Keep simple & robust: use reader.text(); if user needs OCR/PDF deep, they can paste text.
-  async function fileToText(file){
-    try { return await file.text(); } catch{ return ''; }
-  }
+function setLanguage(l,ev){lang=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));ev.target.classList.add('active');document.querySelectorAll('.t-en').forEach(x=>x.style.display=(l==='en')?'inline':'none');document.querySelectorAll('.t-mr').forEach(x=>x.style.display=(l==='mr')?'inline':'none');}
+function showTab(name,ev){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById(name+'-tab').classList.add('active');ev.target.classList.add('active');}
+function showStatus(msg,type){const el=document.getElementById('statusMessage');el.textContent=msg;el.className='status-message '+type;setTimeout(()=>{el.className='status-message'},5000)}
+function loading(b){document.getElementById('loadingOverlay').classList.toggle('active',b);}
 
-  // Capture uploads
-  const caseFile = document.getElementById('caseFile');
-  const grFile = document.getElementById('grFile');
-  const caseName = document.getElementById('caseName');
-  const grName = document.getElementById('grName');
-  caseFile.addEventListener('change',()=>{ if(caseFile.files[0]){ caseName.style.display='inline-flex'; caseName.querySelector('span').textContent=caseFile.files[0].name; }});
-  grFile.addEventListener('change',()=>{ if(grFile.files[0]){ grName.style.display='inline-flex'; grName.querySelector('span').textContent=grFile.files[0].name; }});
+async function handleFileUpload(kind,input){
+  const files=input.files; if(!files||!files.length) return;
+  for(const f of files){ if(f.size>15*1024*1024){ showStatus('Max 15MB per file', 'error'); return; } }
+  if(kind==='case'){ uploaded.case=files[0]; document.getElementById('caseUploadZone').classList.add('has-file'); document.getElementById('caseFileList').innerHTML=`<div class="file-item"><span>✅ ${files[0].name}</span><span>${(files[0].size/1024).toFixed(0)} KB</span></div>`; textStore.caseText = await readFileToText(files[0]); }
+  if(kind==='gr'){ uploaded.gr=files[0]; document.getElementById('grUploadZone').classList.add('has-file'); document.getElementById('grFileList').innerHTML=`<div class="file-item"><span>✅ ${files[0].name}</span><span>${(files[0].size/1024).toFixed(0)} KB</span></div>`; textStore.grText = await readFileToText(files[0]); }
+  if(kind==='legal'){ uploaded.legal=Array.from(files); document.getElementById('legalUploadZone').classList.add('has-file'); document.getElementById('legalFileList').innerHTML = uploaded.legal.map(f=>`<div class="file-item"><span>✅ ${f.name}</span><span>${(f.size/1024).toFixed(0)} KB</span></div>`).join(''); const chunks = await Promise.all(uploaded.legal.map(readFileToText)); textStore.legalText = chunks.join('\n\n'); }
+  showStatus(kind.toUpperCase()+' uploaded','success');
+}
 
-  // Main action
-  async function doAction(mode){
-    try{
-      const caseTxtBox = document.getElementById('caseText').value.trim();
-      const grTxtBox   = document.getElementById('grText').value.trim();
-      if(!caseFile.files[0] && !caseTxtBox){ show('Case आवश्यक आहे: फाईल अपलोड करा किंवा मजकूर पेस्ट करा','err'); return; }
-      if(!grFile.files[0] && !grTxtBox){ show('GR आवश्यक आहे: फाईल अपलोड करा किंवा मजकूर पेस्ट करा','err'); return; }
+async function readFileToText(file){
+  const ext=file.name.toLowerCase().split('.').pop();
+  try{
+    if(ext==='pdf'){ const buf=await file.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:buf}).promise; let out=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const txt=await page.getTextContent(); out += txt.items.map(it=>it.str).join(' ') + '\n'; } return out.trim(); }
+    if(ext==='docx'){ const ab=await file.arrayBuffer(); const res=await window.mammoth.extractRawText({arrayBuffer:ab}); return (res.value||'').trim(); }
+    if(['png','jpg','jpeg','webp','tif','tiff','bmp'].includes(ext)){ loading(true); try{ const worker=await Tesseract.createWorker(); await worker.loadLanguage('eng+hin+mar'); await worker.initialize('eng+hin+mar'); const {data:{text}}=await worker.recognize(file); await worker.terminate(); return text.trim(); } finally { loading(false); } }
+    return await file.text();
+  }catch(e){ console.error(e); showStatus('Could not read file. You may paste text under Case Details.', 'warning'); return ''; }
+}
 
-      show('Processing… कृपया थांबा','warn');
+function basicParseFacts(txt){
+  const d={complainant:'',village:'',taluka:'',hearingDate:'',hearingTime:'',refs:[]};
+  let m = /(सौ\.|श्री\.?)\s*([अ-ह][^\s,]*)\s+([अ-ह][^,]*)[, ]+\s*रा\.?\s*([अ-ह][^,]*)(?:,\s*ता\.?\s*([अ-ह][^,]*))?/u.exec(txt);
+  if(m){ d.complainant=`${m[2]} ${m[3]}`.trim(); d.village=(m[4]||'').trim(); d.taluka=(m[5]||'').trim(); }
+  m = /(सुनावणी).{0,10}(दिनांक|दि\.?)\s*[:\-]?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/u.exec(txt);
+  if(m){ d.hearingDate=m[3]; }
+  m = /(सकाळी|सायंकाळी)\s*([०-९0-9]{1,2})\s*(वा|वाजता)/u.exec(txt);
+  if(m){ d.hearingTime = `${m[2]} वाजता`; }
+  d.refs = txt.split(/\n+/).filter(ln=>/(शासन निर्णय|पत्र|तक्रार|सुनावणी|दिनांक|क्रमांक)/u.test(ln)).slice(0,6);
+  return d;
+}
 
-      const caseText = caseTxtBox || (caseFile.files[0] ? await fileToText(caseFile.files[0]) : '');
-      const grText   = grTxtBox   || (grFile.files[0]   ? await fileToText(grFile.files[0])   : '');
+function ensureMandatory(){
+  if(!uploaded.case){ showStatus('Case file required','error'); showTab('upload',event); return false; }
+  if(!uploaded.gr){ showStatus('GR file required','error'); showTab('upload',event); return false; }
+  return true;
+}
 
-      const payload = {
-        mode, language: LANG,
-        caseText, grText,
-        selectedCaseType: '', // (you can wire case type selector later)
-        applicantName: document.getElementById('applicant').value.trim(),
-        caseNumber: document.getElementById('caseNo').value.trim(),
-        legalSections: document.getElementById('sections').value.trim(),
-        caseDescription: document.getElementById('summary').value.trim()
-      };
+async function analyzeCase(){
+  if(!ensureMandatory()) return;
+  facts = basicParseFacts(textStore.caseText || '');
+  const analysis =
+`FACTS (auto-detected)
+• अर्जदार: ${facts.complainant||'—'}
+• गाव/तालुका: ${facts.village||'—'} / ${facts.taluka||'—'}
+• सुनावणी: ${facts.hearingDate||'—'} ${facts.hearingTime?`(${facts.hearingTime})`:''}
 
-      const res = await fetch('/api/generate', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
+REFERENCES (case text)
+${(facts.refs||[]).map((r,i)=>`  ${i+1}. ${r}`).join('\n')||'  —'}
 
-      if(!res.ok){ const e = await res.text(); show('Server error: '+e,'err'); return; }
-      const data = await res.json();
-      // Accepts either structured or raw fallback
-      let title='Output', text='';
-      if(mode==='analyze'){ title = (LANG==='marathi'?'विश्लेषण अहवाल':'Analysis Report'); text = data.analysisText || data.output || data.raw || JSON.stringify(data,null,2); }
-      if(mode==='decision'){ title = (LANG==='marathi'?'निर्णय':'Decision'); text = data.decisionText || data.output || data.raw || JSON.stringify(data,null,2); }
-      if(mode==='order'){ title = (LANG==='marathi'?'आदेश':'Order'); text = data.orderText || data.output || data.raw || JSON.stringify(data,null,2); }
+LLM will use uploaded GR + case text while drafting decision/order.`;
+  document.getElementById('analysisBox').textContent=analysis;
+  showStatus('Analysis ready','success');
+  showTab('analysis',event);
+}
 
-      document.getElementById('outTitle').textContent = title;
-      document.getElementById('outText').textContent  = text;
-      document.getElementById('outCard').classList.add('output','active');
-      show('Done ✅','ok');
-      window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
-    }catch(err){
-      show('Client error: '+(err?.message||err),'err');
-    }
-  }
+async function callLLM(mode){
+  loading(true);
+  try{
+    const payload={
+      lang,
+      mode, // 'decision' | 'order'
+      caseNumber: document.getElementById('caseNumber').value || '',
+      applicantName: document.getElementById('applicantName').value || '',
+      caseDescription: document.getElementById('caseDescription').value || '',
+      legalSections: document.getElementById('legalSections').value || '',
+      facts,
+      texts:{
+        caseText: (textStore.caseText||'').slice(0,16000),
+        grText: (textStore.grText||'').slice(0,16000),
+        legalText: (textStore.legalText||'').slice(0,8000)
+      }
+    };
+    const res = await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error||'LLM error'); }
+    displayOutput(data.title, data.content, true);
+    showStatus('Generated successfully','success');
+  }catch(e){
+    console.error(e);
+    showStatus('Server error: '+e.message,'error');
+  }finally{ loading(false); }
+}
 
-  function copyOut(){ const t=document.getElementById('outText').textContent; navigator.clipboard.writeText(t); show('कॉपी झाले','ok'); }
-  function downloadOut(){
-    const t=document.getElementById('outText').textContent;
-    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
-    a.download='order_'+Date.now()+'.txt'; a.click(); URL.revokeObjectURL(a.href);
-  }
-  function printOutput(){
-    const o=document.getElementById('outCard'); if(!o.classList.contains('active')){ show('कृपया आधी निर्णय/आदेश तयार करा','err'); return; }
-    window.print();
-  }
+function generateDecision(){ if(!ensureMandatory()) return; callLLM('decision'); }
+function generateOrder(){ if(!ensureMandatory()) return; callLLM('order'); }
+
+function displayOutput(title,content,withSig){
+  document.getElementById('outputTitle').textContent=title;
+  document.getElementById('outputContent').textContent=content;
+  document.getElementById('signatureBlock').innerHTML = withSig ? `
+    <div class="signature-grid">
+      <div class="signature-item"><div class="signature-line"></div><div><b>${lang==='mr'?'मसुदा':'Prepared By'}</b><br>${lang==='mr'?'सहाय्यक CEO':'Assistant CEO'}</div></div>
+      <div class="signature-item"><div class="signature-line"></div><div><b>${lang==='mr'?'मान्य':'Approved By'}</b><br>${lang==='mr'?'मुख्य कार्यकारी अधिकारी':'Chief Executive Officer'}</div></div>
+    </div>` : '';
+  document.getElementById('outputPanel').classList.add('active');
+  document.getElementById('outputPanel').scrollIntoView({behavior:'smooth'});
+}
+
+function copyOutput(){ const t=document.getElementById('outputContent').textContent; navigator.clipboard.writeText(t); showStatus('Copied','success'); }
+function downloadOutput(){ const t=document.getElementById('outputContent').textContent; const blob=new Blob([t],{type:'text/plain'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Order_'+Date.now()+'.txt'; a.click(); URL.revokeObjectURL(url); showStatus('Downloaded','success'); }
+
+document.addEventListener('DOMContentLoaded',()=>{ showStatus('System ready — upload Case + GR','success'); });
 </script>
 </body>
 </html>
