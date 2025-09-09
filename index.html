@@ -1,266 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Government Quasi-Judicial AI System — Zilla Parishad Chandrapur</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
-
-<!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
-<script>
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js';
-</script>
-
-<!-- Mammoth (DOCX) -->
-<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
-
-<!-- Tesseract OCR -->
-<script src="https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
-
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Government Quasi-Judicial AI System — ZP Chandrapur</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:'Roboto','Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#FF9933 0%,#FFFFFF 50%,#138808 100%);margin:0;min-height:100vh}
-header{background:#fff;border-bottom:3px solid #FF9933;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.titles .marathi{font-size:22px;font-weight:800;color:#FF9933}
-.titles .english{font-size:18px;font-weight:700;color:#333}
-.tabs{display:flex;gap:10px;background:#fff;margin:18px;padding:10px;border-radius:10px}
-.tabs button{flex:1;padding:12px;border:none;border-radius:8px;background:#f0f0f0;font-weight:700;cursor:pointer}
-.tabs button.active{background:linear-gradient(135deg,#FF9933,#FF6B00);color:#fff}
-.panel{background:#fff;margin:18px;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.form-group{margin-bottom:14px}
-.form-group label{font-weight:700;margin-bottom:6px;display:block}
-.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px;border:2px solid #ddd;border-radius:8px}
-.actions{display:flex;gap:12px;margin:18px;flex-wrap:wrap}
-.actions button{padding:12px 20px;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer}
-.analyze{background:linear-gradient(135deg,#667eea,#764ba2)}
-.decision{background:linear-gradient(135deg,#f093fb,#f5576c)}
-.order{background:linear-gradient(135deg,#4facfe,#00f2fe)}
-.print{background:linear-gradient(135deg,#43e97b,#38f9d7)}
-.output{display:none;background:#fff;margin:18px;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.output pre{white-space:pre-wrap;line-height:1.8;font-size:15px;color:#222}
-.status{margin:0 18px;padding:12px;border-radius:8px;display:none}
-.status.show{display:block}
-.loading{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:9999}
-.loading.show{display:flex}
-.box{background:#fff;padding:28px;border-radius:12px;text-align:center}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Roboto','Noto Sans Devanagari',sans-serif;background:#f5f6fa;color:#1f2d3d}
+  .header{background:#fff;border-bottom:3px solid #ff9933}
+  .header__in{max-width:1100px;margin:0 auto;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 16px}
+  .brand{display:flex;gap:14px;align-items:center}
+  .emblem{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle,#ffd54f 0,#ffa000 70%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#6d4c41}
+  .title{line-height:1.15}
+  .title b{color:#ff6b00}
+  .badge{background:#138808;color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700}
+  .wrap{max-width:1100px;margin:18px auto;padding:0 16px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:16px;margin-bottom:14px}
+  .card h2{font-size:18px;border-bottom:2px solid #ff9933;padding-bottom:10px;margin-bottom:12px}
+  label{font-weight:700;margin:8px 0 6px;display:block}
+  input[type=text],textarea,select{width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;color:#1f2d3d}
+  input[type=file]{display:none}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:0;border-radius:10px;color:#fff;padding:12px 16px;font-weight:800;cursor:pointer}
+  .b1{background:linear-gradient(135deg,#667eea,#764ba2)}
+  .b2{background:linear-gradient(135deg,#f093fb,#f5576c)}
+  .b3{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+  .b4{background:linear-gradient(135deg,#43e97b,#38f9d7)}
+  .upload{border:2px dashed #90caf9;border-radius:10px;padding:14px;text-align:center;background:#f8fbff;cursor:pointer}
+  .pill{background:#eef2ff;border:1px solid #c7d2fe;color:#1e3a8a;border-radius:8px;padding:6px 10px;display:inline-flex;gap:8px;align-items:center}
+  .status{display:none;margin:10px 0;padding:10px;border-radius:8px;font-weight:700}
+  .ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+  .warn{background:#fff3cd;color:#856404;border:1px solid #ffeeba}
+  .err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+  .output{display:none}
+  .output.active{display:block}
+  .output h3{font-size:18px;margin-bottom:8px}
+  .mono{white-space:pre-wrap;line-height:1.8;border:1px solid #e5e7eb;border-radius:10px;padding:14px;background:#fcfcfe}
+  .lang{display:flex;gap:8px}
+  .lang button{border:2px solid #ff9933;background:#fff;color:#ff6b00;border-radius:999px;padding:6px 10px;font-weight:800;cursor:pointer}
+  .lang .on{background:#ff9933;color:#fff}
+  @media(max-width:860px){.row{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
-<header>
-  <div class="titles">
-    <div class="marathi">जिल्हा परिषद चंद्रपूर</div>
-    <div class="english">ZILLA PARISHAD CHANDRAPUR</div>
-    <div style="font-size:12px;color:#555">Office of the Chief Executive Officer</div>
+<header class="header">
+  <div class="header__in">
+    <div class="brand">
+      <div class="emblem">शासन</div>
+      <div class="title">
+        <div><b>जिल्हा परिषद चंद्रपूर</b></div>
+        <div>Zilla Parishad Chandrapur — CEO Office</div>
+      </div>
+    </div>
+    <div class="lang">
+      <button id="lang-mr" class="on" onclick="setLang('marathi')">मराठी</button>
+      <button id="lang-en" onclick="setLang('english')">English</button>
+      <span class="badge">🔒 Secure Government Portal</span>
+    </div>
   </div>
-  <div style="font-size:12px;color:#666">🔒 Secure Government Portal</div>
 </header>
 
-<div class="tabs">
-  <button class="active" onclick="tab('docs',event)">📁 Documents</button>
-  <button onclick="tab('case',event)">⚖️ Case Details</button>
-  <button onclick="tab('analysis',event)">📊 AI Analysis</button>
-  <button onclick="tab('out',event)">📋 Output</button>
-  <select id="lang" style="margin-left:auto;border:2px solid #ddd;border-radius:8px;padding:10px">
-    <option value="marathi">मराठी</option>
-    <option value="english">English</option>
-  </select>
-</div>
-
-<!-- Documents -->
-<div id="docs" class="panel tab">
-  <h3>📁 Upload Documents</h3>
-  <div class="form-group">
-    <label>Case File (PDF/DOCX/Image) <span style="color:#e74c3c">*</span></label>
-    <input id="caseFile" type="file" accept=".pdf,.docx,image/*" />
+<div class="wrap">
+  <!-- Documents -->
+  <div class="card">
+    <h2>📁 कागदपत्र अपलोड (Case + GR अनिवार्य)</h2>
+    <div class="row">
+      <div>
+        <label>Case File (PDF/DOCX/Image) *</label>
+        <div class="upload" onclick="document.getElementById('caseFile').click()">Click to upload Case</div>
+        <input id="caseFile" type="file" accept=".pdf,.docx,image/*" />
+        <div id="caseName" class="pill" style="margin-top:8px;display:none">✅ <span></span></div>
+        <label style="margin-top:10px">Alternative: Paste Case Text (optional)</label>
+        <textarea id="caseText" rows="6" placeholder="प्रकरणाचा मजकूर इथे पेस्ट करा (पर्यायी)"></textarea>
+      </div>
+      <div>
+        <label>Government Resolution (GR) (PDF/DOCX/Image) *</label>
+        <div class="upload" onclick="document.getElementById('grFile').click()">Click to upload GR</div>
+        <input id="grFile" type="file" accept=".pdf,.docx,image/*" />
+        <div id="grName" class="pill" style="margin-top:8px;display:none">✅ <span></span></div>
+        <label style="margin-top:10px">Alternative: Paste GR Text (optional)</label>
+        <textarea id="grText" rows="6" placeholder="GR चा मजकूर इथे पेस्ट करा (पर्यायी)"></textarea>
+      </div>
+    </div>
   </div>
-  <div class="form-group">
-    <label>Government Resolution (GR) (PDF/DOCX/Image) <span style="color:#e74c3c">*</span></label>
-    <input id="grFile" type="file" accept=".pdf,.docx,image/*" />
+
+  <!-- Case Info -->
+  <div class="card">
+    <h2>⚖️ प्रकरण तपशील</h2>
+    <div class="row">
+      <div>
+        <label>प्रकरण क्रमांक (Case No.)</label>
+        <input id="caseNo" type="text" placeholder="उदा. ZP/CEO/2025/123" />
+      </div>
+      <div>
+        <label>अर्जदाराचे नाव (Applicant Name)</label>
+        <input id="applicant" type="text" placeholder="उदा. सौ. इंदुबाई हादर राठोड" />
+      </div>
+    </div>
+    <label>विशिष्ट कायदेशीर कलमे/नियम (Optional)</label>
+    <input id="sections" type="text" placeholder="उदा. GR दि. 02/02/2023; MCS Rules; RTI S.19" />
+    <label style="margin-top:10px">प्रकरणाचे संक्षिप्त वर्णन (Optional)</label>
+    <textarea id="summary" rows="4" placeholder="उदा. स्थानिक रहिवासी अट व भरती तक्रारी बाबत..."></textarea>
   </div>
-  <div class="form-group">
-    <label>Additional Legal Docs (optional)</label>
-    <input id="legalFiles" type="file" accept=".pdf,.docx,image/*" multiple />
+
+  <!-- Actions -->
+  <div class="card">
+    <h2>🛠️ कृती</h2>
+    <div class="btns">
+      <button class="btn b1" onclick="doAction('analyze')">🔍 AI ANALYZE</button>
+      <button class="btn b2" onclick="doAction('decision')">📝 GENERATE DECISION</button>
+      <button class="btn b3" onclick="doAction('order')">📋 GENERATE ORDER (मराठी)</button>
+      <button class="btn b4" onclick="printOutput()">🖨️ PRINT / PDF</button>
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <!-- Output -->
+  <div id="outCard" class="card output">
+    <h2 id="outTitle">Output</h2>
+    <div id="outText" class="mono"></div>
+    <div class="btns" style="margin-top:10px">
+      <button class="btn b1" onclick="copyOut()">📋 Copy</button>
+      <button class="btn b3" onclick="downloadOut()">💾 Download</button>
+    </div>
   </div>
 </div>
-
-<!-- Case Details -->
-<div id="case" class="panel tab" style="display:none">
-  <h3>⚖️ Case Details</h3>
-  <div class="form-group"><label>Case Number</label><input id="caseNumber" placeholder="ZP/CEO/2025/123"/></div>
-  <div class="form-group"><label>Applicant Name</label><input id="applicantName" placeholder="e.g., Indubai Hadar Rathod"/></div>
-  <div class="form-group"><label>Specific Legal Sections / Rules</label><input id="legalSections" placeholder="e.g., GR 02/02/2023; MCS Rules; RTI S.19"/></div>
-  <div class="form-group"><label>Brief Case Description</label><textarea id="caseDescription" rows="4"></textarea></div>
-</div>
-
-<!-- AI Analysis -->
-<div id="analysis" class="panel tab" style="display:none">
-  <h3>📊 AI Analysis</h3>
-  <pre id="analysisBox" style="background:#f8f9fa;border:1px solid #eee;padding:14px;border-radius:10px">Upload Case+GR and click Analyze</pre>
-</div>
-
-<!-- Actions -->
-<div class="actions">
-  <button class="analyze" onclick="doAnalyze()">🔍 Analyze with AI</button>
-  <button class="decision" onclick="doDecision()">📝 Generate Decision</button>
-  <button class="order" onclick="doOrder()">📋 Generate Order</button>
-  <button class="print" onclick="window.print()">🖨 Print</button>
-</div>
-
-<!-- Output -->
-<div id="out" class="output tab" style="display:none">
-  <h3 id="outTitle">Output</h3>
-  <pre id="outText"></pre>
-</div>
-
-<div id="status" class="status"></div>
-
-<div id="loading" class="loading"><div class="box"><div>⏳ Processing…</div><small>Reading docs & drafting</small></div></div>
 
 <script>
-const st = { caseText:"", grText:"", legalText:"" };
+  // Simple language toggle (default Marathi)
+  let LANG = 'marathi';
+  function setLang(l){ LANG=l; document.getElementById('lang-mr').classList.toggle('on', l==='marathi'); document.getElementById('lang-en').classList.toggle('on', l!=='marathi'); }
 
-function tab(which,ev){
-  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
-  document.getElementById(which).style.display='block';
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-  if (ev) ev.target.classList.add('active');
-}
+  // Status helper
+  function show(msg, cls='ok'){ const s=document.getElementById('status'); s.className='status '+(cls==='ok'?'ok':cls==='warn'?'warn':'err'); s.textContent=msg; s.style.display='block'; }
 
-function showStatus(msg,type="ok"){
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.style.background = type==="err" ? "#f8d7da" : type==="warn" ? "#fff3cd" : "#d4edda";
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 5000);
-}
-
-const readFileToText = async (file)=>{
-  const name = file.name.toLowerCase();
-  const ext = name.split('.').pop();
-  if (ext==='pdf') return extractPdf(file);
-  if (ext==='docx') return extractDocx(file);
-  if (['png','jpg','jpeg','webp','tif','tiff','bmp'].includes(ext)) return extractImageOCR(file);
-  return await file.text();
-};
-
-async function extractPdf(file){
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
-  let out = '';
-  for (let i=1;i<=pdf.numPages;i++){
-    const page = await pdf.getPage(i);
-    const txt = await page.getTextContent();
-    out += txt.items.map(it=>it.str).join(' ') + '\n';
+  // File reads (text only). Keep simple & robust: use reader.text(); if user needs OCR/PDF deep, they can paste text.
+  async function fileToText(file){
+    try { return await file.text(); } catch{ return ''; }
   }
-  return out.trim();
-}
-async function extractDocx(file){
-  const arrayBuffer = await file.arrayBuffer();
-  const res = await window.mammoth.extractRawText({arrayBuffer});
-  return (res && res.value || '').trim();
-}
-async function extractImageOCR(file){
-  const loading = document.getElementById('loading'); loading.classList.add('show');
-  try {
-    const worker = await Tesseract.createWorker();
-    await worker.loadLanguage('eng+hin+mar');
-    await worker.initialize('eng+hin+mar');
-    const { data:{ text } } = await worker.recognize(file);
-    await worker.terminate();
-    return text.trim();
-  } finally { loading.classList.remove('show'); }
-}
 
-async function collectTexts(){
-  const caseFile = document.getElementById('caseFile').files[0];
-  const grFile   = document.getElementById('grFile').files[0];
-  const legalSet = document.getElementById('legalFiles').files;
+  // Capture uploads
+  const caseFile = document.getElementById('caseFile');
+  const grFile = document.getElementById('grFile');
+  const caseName = document.getElementById('caseName');
+  const grName = document.getElementById('grName');
+  caseFile.addEventListener('change',()=>{ if(caseFile.files[0]){ caseName.style.display='inline-flex'; caseName.querySelector('span').textContent=caseFile.files[0].name; }});
+  grFile.addEventListener('change',()=>{ if(grFile.files[0]){ grName.style.display='inline-flex'; grName.querySelector('span').textContent=grFile.files[0].name; }});
 
-  if (!caseFile){ showStatus("Please upload Case File","err"); tab('docs'); throw new Error("no case"); }
-  if (!grFile){ showStatus("Please upload Government Resolution","err"); tab('docs'); throw new Error("no gr"); }
+  // Main action
+  async function doAction(mode){
+    try{
+      const caseTxtBox = document.getElementById('caseText').value.trim();
+      const grTxtBox   = document.getElementById('grText').value.trim();
+      if(!caseFile.files[0] && !caseTxtBox){ show('Case आवश्यक आहे: फाईल अपलोड करा किंवा मजकूर पेस्ट करा','err'); return; }
+      if(!grFile.files[0] && !grTxtBox){ show('GR आवश्यक आहे: फाईल अपलोड करा किंवा मजकूर पेस्ट करा','err'); return; }
 
-  const [caseText, grText] = await Promise.all([readFileToText(caseFile), readFileToText(grFile)]);
-  let legalText = "";
-  if (legalSet && legalSet.length){
-    const arr = await Promise.all(Array.from(legalSet).map(f=>readFileToText(f)));
-    legalText = arr.join("\n\n");
+      show('Processing… कृपया थांबा','warn');
+
+      const caseText = caseTxtBox || (caseFile.files[0] ? await fileToText(caseFile.files[0]) : '');
+      const grText   = grTxtBox   || (grFile.files[0]   ? await fileToText(grFile.files[0])   : '');
+
+      const payload = {
+        mode, language: LANG,
+        caseText, grText,
+        selectedCaseType: '', // (you can wire case type selector later)
+        applicantName: document.getElementById('applicant').value.trim(),
+        caseNumber: document.getElementById('caseNo').value.trim(),
+        legalSections: document.getElementById('sections').value.trim(),
+        caseDescription: document.getElementById('summary').value.trim()
+      };
+
+      const res = await fetch('/api/generate', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok){ const e = await res.text(); show('Server error: '+e,'err'); return; }
+      const data = await res.json();
+      // Accepts either structured or raw fallback
+      let title='Output', text='';
+      if(mode==='analyze'){ title = (LANG==='marathi'?'विश्लेषण अहवाल':'Analysis Report'); text = data.analysisText || data.output || data.raw || JSON.stringify(data,null,2); }
+      if(mode==='decision'){ title = (LANG==='marathi'?'निर्णय':'Decision'); text = data.decisionText || data.output || data.raw || JSON.stringify(data,null,2); }
+      if(mode==='order'){ title = (LANG==='marathi'?'आदेश':'Order'); text = data.orderText || data.output || data.raw || JSON.stringify(data,null,2); }
+
+      document.getElementById('outTitle').textContent = title;
+      document.getElementById('outText').textContent  = text;
+      document.getElementById('outCard').classList.add('output','active');
+      show('Done ✅','ok');
+      window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+    }catch(err){
+      show('Client error: '+(err?.message||err),'err');
+    }
   }
-  st.caseText = caseText;
-  st.grText = grText;
-  st.legalText = legalText;
-}
 
-async function callBackend(kind){
-  const lang = document.getElementById('lang').value;
-  const payload = {
-    language: lang,
-    caseText: st.caseText,
-    grText: st.grText,
-    legalText: st.legalText,
-    selectedCaseType: "anganwadi",
-    applicantName: document.getElementById('applicantName').value || "",
-    caseNumber: document.getElementById('caseNumber').value || "",
-    legalSections: document.getElementById('legalSections').value || "",
-    caseDescription: document.getElementById('caseDescription').value || ""
-  };
-
-  const loading = document.getElementById('loading'); loading.classList.add('show');
-  try{
-    const resp = await fetch("/api/generate", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    if (!resp.ok){ throw new Error("API error"); }
-    const data = await resp.json();
-
-    if (kind === "analyze") {
-      const f = data.facts || {};
-      const lines = [
-        "FACTS DETECTED",
-        `• Complainant: ${f.complainant || '—'}`,
-        `• Village/Taluka: ${f.village || '—'} / ${f.taluka || '—'}`,
-        `• Hearing: ${f.hearingDate || '—'} ${f.hearingTime ? '('+f.hearingTime+')' : ''}`,
-        `• Case No.: ${f.caseNumber || '—'}`,
-        `• Subject: ${f.subject || '—'}`,
-        "",
-        "REFERENCES:",
-        ...(Array.isArray(f.references) ? f.references.map((r,i)=>`  ${i+1}. ${r}`) : ['  —'])
-      ];
-      document.getElementById('analysisBox').textContent = lines.join("\n");
-      tab('analysis');
-      showStatus("Analysis generated");
-    }
-
-    if (kind === "decision") {
-      document.getElementById('outTitle').innerText = (lang==="marathi"?"निर्णय":"Decision");
-      document.getElementById('outText').textContent = data.decisionText || "—";
-      document.getElementById('out').style.display="block";
-      tab('out');
-      showStatus("Decision drafted");
-    }
-
-    if (kind === "order") {
-      document.getElementById('outTitle').innerText = (lang==="marathi"?"आदेश":"Order");
-      document.getElementById('outText').textContent = data.orderText || "—";
-      document.getElementById('out').style.display="block";
-      tab('out');
-      showStatus("Order drafted");
-    }
-
-  } catch(e){
-    console.error(e);
-    showStatus("Backend error. Check API key / deployment.", "err");
-  } finally {
-    loading.classList.remove('show');
+  function copyOut(){ const t=document.getElementById('outText').textContent; navigator.clipboard.writeText(t); show('कॉपी झाले','ok'); }
+  function downloadOut(){
+    const t=document.getElementById('outText').textContent;
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));
+    a.download='order_'+Date.now()+'.txt'; a.click(); URL.revokeObjectURL(a.href);
   }
-}
-
-async function doAnalyze(){ await collectTexts(); await callBackend("analyze"); }
-async function doDecision(){ await collectTexts(); await callBackend("decision"); }
-async function doOrder(){ await collectTexts(); await callBackend("order"); }
+  function printOutput(){
+    const o=document.getElementById('outCard'); if(!o.classList.contains('active')){ show('कृपया आधी निर्णय/आदेश तयार करा','err'); return; }
+    window.print();
+  }
 </script>
 </body>
 </html>
