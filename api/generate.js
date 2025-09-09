@@ -5,106 +5,88 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Helper: safe string
-const s = (v) => (v || "").toString().trim();
-
+// simple health check for GET
 export default async function handler(req, res) {
   try {
+    if (req.method === "GET") {
+      return res.status(200).json({ ok: true });
+    }
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: "OPENAI_API_KEY missing" });
+    }
+
+    const body = req.body || (await new Promise(resolve => {
+      let raw=""; req.on("data", c => raw += c);
+      req.on("end", () => { try { resolve(JSON.parse(raw||"{}")); } catch { resolve({}); } });
+    }));
 
     const {
-      language = "marathi",           // "marathi" | "english"
-      caseText = "",
-      grText = "",
-      legalText = "",
-      selectedCaseType = "",
-      applicantName = "",
-      caseNumber = "",
-      legalSections = "",
-      caseDescription = ""
-    } = await req.json?.() || await getBody(req);
+      mode = "order",              // "analyze" | "decision" | "order"
+      language = "marathi",        // "marathi" | "english"
+      caseText = "", grText = "", legalText = "",
+      selectedCaseType = "", applicantName = "", caseNumber = "",
+      legalSections = "", caseDescription = ""
+    } = body;
 
-    const sys = `
-You are a senior quasi-judicial drafting assistant for the **Chief Executive Officer, Zilla Parishad, Chandrapur**.
-Your job:
-1) Extract precise facts (names, dates, places, case numbers, departments, hearing date/time, references).
-2) Produce two separate outputs:
-   A) DECISION (short memorandum) — concise, no analysis blocks, operative findings only.
-   B) ORDER (final quasi-judicial order) — formal, NO analysis paragraphs, includes:
-      - Office heading for CEO ZP Chandrapur
-      - File No., Date, Subject
-      - संदर्भ / References (numbered, pulled from the case/GR)
-      - Operative part: clear directions, timelines (7/30/45 days), cancellation/supersession if any
-      - Appellate remedy (Divisional Commissioner 30 days; Govt 60 days)
-      - Signature block
-Use strictly the facts provided. If a fact is missing, use “—” (do NOT invent).
-Language: ${language === "marathi" ? "Marathi (official government register, precise, clean)" : "English (formal government legal style)"}.
-Output as JSON with keys: facts, decisionText, orderText. Facts must include:
-{ complainant, village, taluka, hearingDate, hearingTime, caseNumber, references[], subject }`;
+    const systemPrompt = `You are a Government Quasi-Judicial Drafting Engine for CEO, ZP Chandrapur. 
+Generate outputs strictly from provided texts. Do not invent facts. 
+If any value missing, use [—]. Keep analysis separate from decision/order.`;
 
-    // Build the user content
-    const userContent = `
-=== CASE TYPE ===
-${s(selectedCaseType)}
+    // Build the user prompt compactly
+    const userPrompt = `
+ACTION: ${mode.toUpperCase()}
+LANG: ${language}
 
-=== CASE NUMBER ===
-${s(caseNumber)}
+KNOWN FIELDS:
+- selectedCaseType: ${selectedCaseType || "[—]"}
+- applicantName: ${applicantName || "[—]"}
+- caseNumber: ${caseNumber || "[—]"}
+- legalSections: ${legalSections || "[—]"}
+- caseDescription: ${caseDescription || "[—]"}
+- today: ${new Date().toLocaleDateString("en-GB")}
 
-=== APPLICANT NAME ===
-${s(applicantName)}
+[CASE FILE TEXT]
+${caseText.slice(0, 120000)}
 
-=== CASE DESCRIPTION (Officer entered) ===
-${s(caseDescription)}
+[GR TEXT]
+${grText.slice(0, 120000)}
 
-=== LEGAL SECTIONS ENTERED BY OFFICER ===
-${s(legalSections)}
+[ADDITIONAL LEGAL TEXT]
+${legalText.slice(0, 80000)}
 
-=== CASE FILE (raw text) ===
-${s(caseText)}
+Return JSON only:
+- For ACTION=analyze: {"facts":{...}}
+- For ACTION=decision: {"facts":{...}, "decisionText":"..."}
+- For ACTION=order: {"facts":{...}, "orderText":"..."}
+`;
 
-=== GOVERNMENT RESOLUTION (raw text) ===
-${s(grText)}
-
-=== ADDITIONAL LEGAL DOCS / PRECEDENTS (raw text) ===
-${s(legalText)}
-    `.trim();
-
-    // Use a strong, instruction-following model
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini", // works well for structure + Marathi
+    // GPT call (Responses API)
+    const resp = await client.responses.create({
+      model: "gpt-4.1-mini",
       temperature: 0.2,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: sys },
-        { role: "user", content: userContent }
+      max_output_tokens: 1800,
+      input: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
       ]
     });
 
-    const raw = completion.choices?.[0]?.message?.content || "{}";
-    let data;
+    const text = resp.output_text?.trim() || "";
+    // Try safe JSON extraction
+    let parsed;
     try {
-      data = JSON.parse(raw);
-    } catch (e) {
-      data = { decisionText: "", orderText: "", facts: {}, _raw: raw };
+      const m = text.match(/\{[\s\S]*\}$/);
+      parsed = JSON.parse(m ? m[0] : text);
+    } catch {
+      return res.status(200).json({ raw: text });
     }
+    return res.status(200).json(parsed);
 
-    return res.status(200).json({
-      ok: true,
-      facts: data.facts || {},
-      decisionText: data.decisionText || "",
-      orderText: data.orderText || ""
-    });
-
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ ok: false, error: err?.message || "Server error" });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "Server error", details: String(e?.message || e) });
   }
-}
-
-// For Vercel's edge/body
-async function getBody(req) {
-  const text = await new Response(req.body).text();
-  try { return JSON.parse(text); } catch { return {}; }
 }
