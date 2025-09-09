@@ -1,8 +1,9 @@
 {
-  "name": "zp-agent",
-  "private": true,
+  "name": "zp-quasi-judicial-ai",
+  "version": "1.0.0",
   "type": "module",
+  "private": true,
   "dependencies": {
-    "openai": "4.58.1"
+    "openai": "^4.57.0"
   }
 }
