@@ -1,8 +1,8 @@
 {
-  "name": "zp-ceo-agent",
+  "name": "zp-agent",
   "private": true,
   "type": "module",
   "dependencies": {
-    "openai": "4.57.0"
+    "openai": "4.58.1"
   }
 }
