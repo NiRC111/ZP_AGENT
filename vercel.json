@@ -4,5 +4,13 @@
     "api/generate.js": {
       "runtime": "nodejs18.x"
     }
-  }
+  },
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "api/generate.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/generate.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
